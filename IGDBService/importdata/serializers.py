@@ -1,7 +1,11 @@
 from .models import IGDBGame, Genre
 from rest_framework import serializers
 
-class GameSerializer(serializers.ModelSerializer):
+
+from .models import IGDBGame
+from rest_framework import serializers
+
+class IGDBGameSerializer(serializers.ModelSerializer):
 
 	class Meta:
 

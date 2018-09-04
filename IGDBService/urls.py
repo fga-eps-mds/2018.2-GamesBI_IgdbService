@@ -19,5 +19,6 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('import_data/', include('IGDBService.importdata.urls')),
+    path('api/', include('IGDBService.API.urls')),
     path(r'^api-auth/', include('rest_framework.urls'))
 ]

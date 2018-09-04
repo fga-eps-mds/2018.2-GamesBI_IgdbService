@@ -76,12 +76,13 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = { 
+DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'mongo1',
         'HOST': 'db'
-    }   
+        'NAME': 'steamApiDB',
+    }
 }
 
 # Password validation

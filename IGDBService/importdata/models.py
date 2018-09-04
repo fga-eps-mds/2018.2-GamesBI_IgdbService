@@ -55,6 +55,7 @@ class IGDBGame(models.Model):
 		null=True
 	)
 
+<<<<<<< 978ad1a266c7a4ba0addacb34b11258d22173b8f
 	steam = models.IntegerField(
 		('Steam Id'),
 		null=True
@@ -63,6 +64,10 @@ class IGDBGame(models.Model):
 	genres = models.ManyToManyField(
 		Genre,
 		blank=True
+=======
+	genres = models.ManyToManyField(
+		Genre
+>>>>>>> [ADD] #89 Created Model for IGDB Service
 	)
 
 	def __str__(self):
