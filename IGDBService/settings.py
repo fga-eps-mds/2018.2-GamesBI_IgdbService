@@ -79,7 +79,8 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 DATABASES = { 
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'steamApiDB',
+        'NAME': 'mongo',
+        'HOST': 'db'
     }   
 }
 
