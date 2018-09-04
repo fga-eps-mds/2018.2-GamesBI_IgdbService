@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'IGDBService.API',
+    'IGDBService.importdata',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -76,8 +79,7 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 DATABASES = { 
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'mongo',
-        'HOST': 'db'
+        'NAME': 'steamApiDB',
     }   
 }
 
