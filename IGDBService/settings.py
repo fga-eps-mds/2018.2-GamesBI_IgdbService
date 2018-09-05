@@ -79,7 +79,8 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 DATABASES = { 
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'igdbData',
+        'NAME': 'mongo',
+        'HOST': 'db'
     }   
 }
 
