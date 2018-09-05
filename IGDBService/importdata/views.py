@@ -8,7 +8,6 @@ from .models import IGDBGame, Genre
 from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer
 from django.shortcuts import render
 
-
 class GamesListView(APIView):
     serializer_class = GameSerializer
     def get(self, request, format=None):
@@ -37,7 +36,6 @@ class IgDBView(APIView):
         information about a game
         and filter for Null value
     '''
-
     def get(self, request, format=None):
         IGDBGame.objects.all().delete()
         header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
@@ -59,7 +57,6 @@ class IgDBView(APIView):
                 self.get_genres(gamedata['genres'])
 
             games = IGDBGame.objects.all()
-
 
         return Response(data=ndata)
 
@@ -118,6 +115,7 @@ class IgDBView(APIView):
             'time_to_beat': time_to_beat,
             'steam':steam,
             'genres': genres
+        }
 
         return filtered_data
 
@@ -133,13 +131,12 @@ class IgDBView(APIView):
 
         )
 
-        new_game.save()
+
         genres = self.get_genres(filtered_data['genres'])
 
         for genre in genres:
             new_game.genres.add(genre)
             new_game.save()
-
 
     def get_genres(self, genres_id_list):
         genres = []
@@ -152,6 +149,12 @@ class IgDBView(APIView):
             data = requests.get(url, headers=header)
             ndata = data.json()
 
+        genre = Genre(
+        id = ndata[0]['id'],
+        name = ndata[0]['name']
+        )
+
+        genres.append(genre)
 
             genre = Genre(
                 id = ndata[0]['id'],
