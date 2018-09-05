@@ -79,6 +79,7 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
+<<<<<<< d79458eb88e443ba3f193771ac9c2d187a382646
 <<<<<<< d587316b453efdffa92b57e922245937701a8e67
 
         'NAME': 'mongo1',
@@ -87,6 +88,10 @@ DATABASES = {
     }
 =======
         'NAME': 'igdbData',
+=======
+        'NAME': 'mongo',
+        'HOST': 'db'
+>>>>>>> [UPDATE] HOTFIX Updated requirements and docker compose to run mongodb
     }   
 }
 >>>>>>> [ADD] #90 Starting to create igdb games import
