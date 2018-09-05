@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import IGDBGame, Genre
+
 from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer
 from django.shortcuts import render
 
@@ -117,8 +118,6 @@ class IgDBView(APIView):
             'time_to_beat': time_to_beat,
             'steam':steam,
             'genres': genres
-
-        }
 
         return filtered_data
 

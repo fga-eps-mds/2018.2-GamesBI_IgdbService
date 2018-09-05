@@ -79,11 +79,17 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
+<<<<<<< d587316b453efdffa92b57e922245937701a8e67
 
         'NAME': 'mongo1',
         'HOST': 'db'
         'NAME': 'steamApiDB',
     }
+=======
+        'NAME': 'igdbData',
+    }   
+}
+>>>>>>> [ADD] #90 Starting to create igdb games import
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
