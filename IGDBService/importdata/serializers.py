@@ -28,6 +28,7 @@ class GameNameSerializer(serializers.ModelSerializer):
 		depth = 1
 		fields = ['name']
 
+
 class GenreSerializer(serializers.ModelSerializer):
 
 	class Meta:
