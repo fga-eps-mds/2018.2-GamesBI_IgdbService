@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import IGDBGame, Genre
-from .serializers import IGDBGameSerializer
+from .serializers import GameSerializer
 
 
 class IgDBView(APIView):
@@ -16,9 +16,9 @@ class IgDBView(APIView):
     '''
     def get(self, request, format=None):
         IGDBGame.objects.all().delete()
-        header = {'user-key': '9c3039ea4ad4cb83bfb126100764c483',
+        header = {'user-key': 'a3dd85f2cf6c0a5de9fdb6c927c40516',
         'Accept': 'application/json'}
-        url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset=0'
+        url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset=0'
         data = requests.get(url, headers=header)
         ndata = data.json()
 
@@ -36,6 +36,7 @@ class IgDBView(APIView):
             print(game.popularity)
             print(game.aggregated_rating)
             print(game.time_to_beat)
+            print(game.steam)
             for genre in game.genres.all():
                 print(genre.name)
 
@@ -83,26 +84,35 @@ class IgDBView(APIView):
         else:
             genres = None
 
+        if 'external' in gamedata:
+            steam = gamedata['external']['steam']
+        else:
+            steam = None
+
+
         filtered_data = {
-        'id': id,
-        'name': name,
-        'hypes': hypes,
-        'popularity': popularity,
-        'aggregated_rating': aggregated_rating,
-        'time_to_beat': time_to_beat,
-        'genres': genres
+            'id': id,
+            'name': name,
+            'hypes': hypes,
+            'popularity': popularity,
+            'aggregated_rating': aggregated_rating,
+            'time_to_beat': time_to_beat,
+            'steam':steam,
+            'genres': genres
+
         }
 
         return filtered_data
 
     def save_game(self, filtered_data):
         new_game = IGDBGame(
-        id = filtered_data['id'],
-        name = filtered_data['name'],
-        hypes = filtered_data['hypes'],
-        popularity = filtered_data['popularity'],
-        aggregated_rating = filtered_data['aggregated_rating'],
-        time_to_beat = filtered_data['time_to_beat']
+            id = filtered_data['id'],
+            name = filtered_data['name'],
+            hypes = filtered_data['hypes'],
+            popularity = filtered_data['popularity'],
+            aggregated_rating = filtered_data['aggregated_rating'],
+            time_to_beat = filtered_data['time_to_beat'],
+            steam = filtered_data['steam']
 
         )
 
@@ -120,7 +130,7 @@ class IgDBView(APIView):
 
         for genre_id in genres_id_list:
             url = 'https://api-endpoint.igdb.com/genres/{}?fields=name'.format(genre_id)
-            header = {'user-key': '9c3039ea4ad4cb83bfb126100764c483',
+            header = {'user-key': 'a3dd85f2cf6c0a5de9fdb6c927c40516',
             'Accept': 'application/json'}
 
             data = requests.get(url, headers=header)
@@ -128,8 +138,8 @@ class IgDBView(APIView):
 
 
             genre = Genre(
-            id = ndata[0]['id'],
-            name = ndata[0]['name']
+                id = ndata[0]['id'],
+                name = ndata[0]['name']
             )
             genre.save()
 
