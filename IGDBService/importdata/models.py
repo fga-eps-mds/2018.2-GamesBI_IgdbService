@@ -56,7 +56,8 @@ class IGDBGame(models.Model):
 	)
 
 	genres = models.ManyToManyField(
-		Genre
+		Genre,
+		blank=True
 	)
 
 	def __str__(self):
