@@ -14,33 +14,40 @@ class IgDBView(APIView):
         information about a game
         and filter for Null value
     '''
+
     def get(self, request, format=None):
         IGDBGame.objects.all().delete()
-        header = {'user-key': 'a3dd85f2cf6c0a5de9fdb6c927c40516',
+        header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
         'Accept': 'application/json'}
-        url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset=0'
+        url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=1&scroll=1'
         data = requests.get(url, headers=header)
-        ndata = data.json()
+        max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
-        for gamedata in ndata:
-            filtered_data = self.filter_data(gamedata)
-            self.save_game(filtered_data)
-            self.get_genres(gamedata['genres'])
+        for page in range(0, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
+            url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset='+str(page)
+            data = requests.get(url, headers=header)
+            ndata = data.json()
 
-        games = IGDBGame.objects.all()
-        for game in games:
-            print('------------')
-            print(game.id)
-            print(game.name)
-            print(game.hypes)
-            print(game.popularity)
-            print(game.aggregated_rating)
-            print(game.time_to_beat)
-            print(game.steam)
-            for genre in game.genres.all():
-                print(genre.name)
+            for gamedata in ndata:
+                filtered_data = self.filter_data(gamedata)
+                self.save_game(filtered_data)
+                self.get_genres(gamedata['genres'])
 
-            print('------------')
+            games = IGDBGame.objects.all()
+
+            for game in games:
+                print('------------')
+                print(game.id)
+                print(game.name)
+                print(game.hypes)
+                print(game.popularity)
+                print(game.aggregated_rating)
+                print(game.time_to_beat)
+                print(game.steam)
+                for genre in game.genres.all():
+                    print(genre.name)
+
+                print('------------')
 
         return Response(data=ndata)
 
@@ -130,7 +137,7 @@ class IgDBView(APIView):
 
         for genre_id in genres_id_list:
             url = 'https://api-endpoint.igdb.com/genres/{}?fields=name'.format(genre_id)
-            header = {'user-key': 'a3dd85f2cf6c0a5de9fdb6c927c40516',
+            header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
             'Accept': 'application/json'}
 
             data = requests.get(url, headers=header)
@@ -146,6 +153,3 @@ class IgDBView(APIView):
             genres.append(genre)
 
         return genres
-
-
-
