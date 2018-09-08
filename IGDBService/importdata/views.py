@@ -59,19 +59,6 @@ class IgDBView(APIView):
 
             games = IGDBGame.objects.all()
 
-            for game in games:
-                print('------------')
-                print(game.id)
-                print(game.name)
-                print(game.hypes)
-                print(game.popularity)
-                print(game.aggregated_rating)
-                print(game.time_to_beat)
-                print(game.steam)
-                for genre in game.genres.all():
-                    print(genre.name)
-
-                print('------------')
 
         return Response(data=ndata)
 
@@ -154,7 +141,6 @@ class IgDBView(APIView):
             new_game.genres.add(genre)
             new_game.save()
 
-        print('o jogo salvou ' + new_game.name)
 
     def get_genres(self, genres_id_list):
         genres = []
