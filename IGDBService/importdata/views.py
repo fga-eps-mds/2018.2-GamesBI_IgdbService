@@ -4,7 +4,29 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import IGDBGame, Genre
-from .serializers import GameSerializer
+from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer
+from django.shortcuts import render
+
+
+class GamesListView(APIView):
+    serializer_class = GameSerializer
+    def get(self, request, format=None):
+        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
+        return Response(serializer.data)
+
+
+class GamesNameListView(APIView):
+    serializer_class = GameNameSerializer
+    def get(self, request, format=None):
+        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
+        return Response(serializer.data)
+
+
+class GamesSteamListView(APIView):
+    serializer_class = GamesSteamSerializer
+    def get(self, request, format=None):
+        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
+        return Response(serializer.data)
 
 
 class IgDBView(APIView):
@@ -22,6 +44,8 @@ class IgDBView(APIView):
         url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=1&scroll=1'
         data = requests.get(url, headers=header)
         max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
+
+        max_result = 50 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
 
         for page in range(0, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
             url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset='+str(page)

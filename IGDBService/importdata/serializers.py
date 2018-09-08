@@ -8,6 +8,21 @@ class GameSerializer(serializers.ModelSerializer):
 		model = IGDBGame
 		fields = '__all__'
 
+class GamesSteamSerializer(serializers.ModelSerializer):
+
+	class Meta:
+
+		model = IGDBGame
+		depth = 1
+		fields = ['steam']
+
+class GameNameSerializer(serializers.ModelSerializer):
+
+	class Meta:
+
+		model = IGDBGame
+		depth = 1
+		fields = ['name']
 
 class GenreSerializer(serializers.ModelSerializer):
 
@@ -21,10 +36,8 @@ class GameSerializerList(serializers.ModelSerializer):
 	genres = GenreSerializer(
 		many=True
 	)
-	
+
 	class Meta:
 
 		model = Genre
 		fields = '__all__'
-
-
