@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import IGDBGame, Genre
+<<<<<<< HEAD
 
 from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer
 from django.shortcuts import render
@@ -27,6 +28,9 @@ class GamesSteamListView(APIView):
     def get(self, request, format=None):
         serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
         return Response(serializer.data)
+=======
+from .serializers import GameSerializer
+>>>>>>> 346b6f6090b05b07a05a4d7a04f46b8e658e2345
 
 
 class IgDBView(APIView):
@@ -36,6 +40,7 @@ class IgDBView(APIView):
         information about a game
         and filter for Null value
     '''
+
     def get(self, request, format=None):
         IGDBGame.objects.all().delete()
         header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
@@ -44,8 +49,11 @@ class IgDBView(APIView):
         data = requests.get(url, headers=header)
         max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
+<<<<<<< HEAD
         max_result = 50 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
 
+=======
+>>>>>>> 346b6f6090b05b07a05a4d7a04f46b8e658e2345
         for page in range(0, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
             url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset='+str(page)
             data = requests.get(url, headers=header)
@@ -57,6 +65,23 @@ class IgDBView(APIView):
                 self.get_genres(gamedata['genres'])
 
             games = IGDBGame.objects.all()
+<<<<<<< HEAD
+=======
+
+            for game in games:
+                print('------------')
+                print(game.id)
+                print(game.name)
+                print(game.hypes)
+                print(game.popularity)
+                print(game.aggregated_rating)
+                print(game.time_to_beat)
+                print(game.steam)
+                for genre in game.genres.all():
+                    print(genre.name)
+
+                print('------------')
+>>>>>>> 346b6f6090b05b07a05a4d7a04f46b8e658e2345
 
         return Response(data=ndata)
 
@@ -115,6 +140,10 @@ class IgDBView(APIView):
             'time_to_beat': time_to_beat,
             'steam':steam,
             'genres': genres
+<<<<<<< HEAD
+=======
+
+>>>>>>> 346b6f6090b05b07a05a4d7a04f46b8e658e2345
         }
 
         return filtered_data
@@ -131,6 +160,15 @@ class IgDBView(APIView):
 
         )
 
+<<<<<<< HEAD
+=======
+        new_game.save()
+        genres = self.get_genres(filtered_data['genres'])
+
+        for genre in genres:
+            new_game.genres.add(genre)
+            new_game.save()
+>>>>>>> 346b6f6090b05b07a05a4d7a04f46b8e658e2345
 
         genres = self.get_genres(filtered_data['genres'])
 
@@ -148,13 +186,10 @@ class IgDBView(APIView):
 
             data = requests.get(url, headers=header)
             ndata = data.json()
+<<<<<<< HEAD
+=======
 
-        genre = Genre(
-        id = ndata[0]['id'],
-        name = ndata[0]['name']
-        )
-
-        genres.append(genre)
+>>>>>>> 346b6f6090b05b07a05a4d7a04f46b8e658e2345
 
             genre = Genre(
                 id = ndata[0]['id'],
@@ -164,4 +199,15 @@ class IgDBView(APIView):
 
             genres.append(genre)
 
+<<<<<<< HEAD
+            genre = Genre(
+                id = ndata[0]['id'],
+                name = ndata[0]['name']
+            )
+            genre.save()
+
+            genres.append(genre)
+
+=======
+>>>>>>> 346b6f6090b05b07a05a4d7a04f46b8e658e2345
         return genres

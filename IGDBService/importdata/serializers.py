@@ -1,7 +1,6 @@
 from .models import IGDBGame, Genre
 from rest_framework import serializers
 
-
 from .models import IGDBGame
 from rest_framework import serializers
 
