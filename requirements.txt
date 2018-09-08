@@ -3,4 +3,8 @@ psycopg2
 coverage
 coveralls
 djongo
+<<<<<<< HEAD
 djangorestframework==3.8.2
+=======
+djangorestframework==3.8.2
+>>>>>>> ba174987febce1d4471559005190f7ecb9d998f3
