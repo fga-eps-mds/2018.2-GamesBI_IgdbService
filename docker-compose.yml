@@ -1,5 +1,4 @@
 version: '3'
-
 services:
   db:
     image: mongo
@@ -14,5 +13,3 @@ services:
       - "8000:8000"
     depends_on:
       - db
-
-

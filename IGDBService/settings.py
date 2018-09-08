@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'IGDBService.API',
+    'IGDBService.importdata',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -73,13 +76,13 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = { 
+DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'mongo',
+        'NAME': 'mongo1',
         'HOST': 'db'
-    }   
-}
+        'NAME': 'steamApiDB',
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
