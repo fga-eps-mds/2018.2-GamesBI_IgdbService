@@ -13,10 +13,4 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-<<<<<<< d9f8c76f5e04d09e61c8726efc67fa620ee9bb95
       - db
-
-
-=======
-      - db
->>>>>>> [UPDATE] HOTFIX Updated requirements and docker compose to run mongodb
