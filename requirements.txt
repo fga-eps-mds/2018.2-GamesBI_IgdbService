@@ -4,4 +4,3 @@ coverage
 coveralls
 djongo
 djangorestframework==3.8.2
-run mongodb
