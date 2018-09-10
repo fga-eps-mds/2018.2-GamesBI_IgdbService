@@ -4,29 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import IGDBGame, Genre
-from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer
 from django.shortcuts import render
-
-
-class GamesListView(APIView):
-    serializer_class = GameSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
-
-
-class GamesNameListView(APIView):
-    serializer_class = GameNameSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
-
-
-class GamesSteamListView(APIView):
-    serializer_class = GamesSteamSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
 
 
 class IgDBView(APIView):
@@ -48,7 +26,7 @@ class IgDBView(APIView):
         max_result = 50 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
 
         for page in range(0, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
-            url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset='+str(page)
+            url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=5&offset='+str(page)
             data = requests.get(url, headers=header)
             ndata = data.json()
 
@@ -143,16 +121,29 @@ class IgDBView(APIView):
 
 
     def get_genres(self, genres_id_list):
+
         genres = []
 
-        for genre_id in genres_id_list:
-            url = 'https://api-endpoint.igdb.com/genres/{}?fields=name'.format(genre_id)
-            header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
-            'Accept': 'application/json'}
+        if len(genres_id_list)>= 3:
+            url = 'https://api-endpoint.igdb.com/genres/{},{},{}?fields=name'.format(
+                genres_id_list[0], genres_id_list[1],genres_id_list[2]
+                )
+        if len( genres_id_list)==2:
+            url = 'https://api-endpoint.igdb.com/genres/{},{}?fields=name'.format(
+                genres_id_list[0], genres_id_list[1]
+                )
+        else:
+            url = 'https://api-endpoint.igdb.com/genres/{}?fields=name'.format(
+                genres_id_list[0]
+                )
 
-            data = requests.get(url, headers=header)
-            ndata = data.json()
+        header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
+        'Accept': 'application/json'}
 
+        data = requests.get(url, headers=header)
+        ndata = data.json()
+
+        for genre in ndata:
 
             genre = Genre(
                 id = ndata[0]['id'],
