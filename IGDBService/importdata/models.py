@@ -85,7 +85,7 @@ class IGDBKeys(models.Model):
 	key = models.CharField(
 		('IGDB Key'),
 		help_text=("key to make requests on IGDB API"),
-		primary_key=True,
+		max_length=100,
 	)
 
 	requests_count = models.IntegerField(

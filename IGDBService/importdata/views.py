@@ -18,15 +18,7 @@ class IgDBView(APIView):
     '''
 
     def get(self, request, format=None):
-
-        with open(os.path.abspath('IGDBService/importdata/keys1.txt'), 'r') as keys1:
-            KEY_1 = keys1.read().rstrip()
-
-        with open(os.path.abspath('IGDBService/importdata/keys2.txt'), 'r') as keys2:
-            KEY_2 = keys2.read().rstrip()
-
-        with open(os.path.abspath('IGDBService/importdata/keys3.txt'), 'r') as keys3:
-            KEY_3 = keys3.read().rstrip()
+        
 
         #max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
