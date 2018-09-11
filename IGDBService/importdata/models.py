@@ -15,7 +15,6 @@ class Genre(models.Model):
 	)
 
 
-
 class IGDBGame(models.Model):
 
 	id = models.IntegerField(
@@ -79,3 +78,21 @@ class IGDBGame(models.Model):
 	    """
 	    verbose_name = ("IGDB Game")
 	    verbose_name_plural = ("IGDB Games")
+
+
+class IGDBKeys(models.Model):
+
+	key = models.CharField(
+		('IGDB Key'),
+		help_text=("key to make requests on IGDB API"),
+		max_length=100,
+	)
+
+	requests_count = models.IntegerField(
+		('Requests Count'),
+		help_text=("Number of times this key has been used"),
+	)
+
+	available = models.BooleanField(
+		default=False
+	)
