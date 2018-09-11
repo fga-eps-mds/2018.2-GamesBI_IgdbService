@@ -22,14 +22,14 @@ class IgDBView(APIView):
         max_result = 3000 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
         #max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
-        for page in range(0, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
+        for page in range(1100, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
 
             key = self.get_key()
             if key == None:
                 ndata={
                         'mensagem de erro':'nao ha mais chaves disponiveis'
                     }
-                )
+
                 return Response(data=ndata)
 
             if((3000-key.requests_count)>=2):
@@ -45,7 +45,7 @@ class IgDBView(APIView):
 
                 for gamedata in ndata:
                     filtered_data = self.filter_data(gamedata)
-                    self.save_game(filtered_data, key.key)
+                    self.save_game(filtered_data, key)
             else:
                 key.available=False
                 key.save()
@@ -125,11 +125,13 @@ class IgDBView(APIView):
         )
 
         new_game.save()
-        genres = self.get_genres(filtered_data['genres'], key)
 
-        for genre in genres:
-            new_game.genres.add(genre)
-            new_game.save()
+        if filtered_data['genres'] is not None:
+            genres = self.get_genres(filtered_data['genres'], key)
+
+            for genre in genres:
+                new_game.genres.add(genre)
+                new_game.save()
 
         print(new_game.name)
         for genre in new_game.genres.all():
@@ -152,7 +154,7 @@ class IgDBView(APIView):
                 genres_id_list[0]
                 )
 
-        header = {'user-key': key,
+        header = {'user-key': key.key,
         'Accept': 'application/json'}
 
         data = requests.get(url, headers=header)
@@ -172,8 +174,8 @@ class IgDBView(APIView):
 
         return genres
 
-        def get_key(self):
-            for key in IGDBKeys.objects.all():
-                if key.available == True:
-                    return key
-            return None
+    def get_key(self):
+        for key in IGDBKeys.objects.all():
+            if key.available == True:
+                return key
+        return None
