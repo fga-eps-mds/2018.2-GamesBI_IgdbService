@@ -8,27 +8,6 @@ from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerialize
 from django.shortcuts import render
 
 
-class GamesListView(APIView):
-    serializer_class = GameSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
-
-
-class GamesNameListView(APIView):
-    serializer_class = GameNameSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
-
-
-class GamesSteamListView(APIView):
-    serializer_class = GamesSteamSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
-
-
 class IgDBView(APIView):
     '''
         View that calls IGDB API
