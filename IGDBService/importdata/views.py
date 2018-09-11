@@ -1,32 +1,12 @@
 import requests
+import os
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import IGDBGame, Genre
-from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer
+from .models import IGDBGame, Genre, IGDBKeys
 from django.shortcuts import render
 
-
-class GamesListView(APIView):
-    serializer_class = GameSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
-
-
-class GamesNameListView(APIView):
-    serializer_class = GameNameSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
-
-
-class GamesSteamListView(APIView):
-    serializer_class = GamesSteamSerializer
-    def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
-        return Response(serializer.data)
 
 
 class IgDBView(APIView):
@@ -38,27 +18,38 @@ class IgDBView(APIView):
     '''
 
     def get(self, request, format=None):
-        IGDBGame.objects.all().delete()
-        header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
-        'Accept': 'application/json'}
-        url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=1&scroll=1'
-        data = requests.get(url, headers=header)
-        max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
-        max_result = 50 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
+        max_result = 4000 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
+        #max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
-        for page in range(0, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
-            url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset='+str(page)
-            data = requests.get(url, headers=header)
-            ndata = data.json()
+        for page in range(2950, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
 
-            for gamedata in ndata:
-                filtered_data = self.filter_data(gamedata)
-                self.save_game(filtered_data)
-                self.get_genres(gamedata['genres'])
+            key = self.get_key()
+            if key == None:
+                ndata={
+                        'mensagem de erro':'nao ha mais chaves disponiveis'
+                    }
 
-            games = IGDBGame.objects.all()
+                return Response(data=ndata)
 
+            if((3000-key.requests_count)>2):
+
+                header = {'user-key': key.key,
+                'Accept': 'application/json'}
+
+                url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=90&order=popularity:desc&limit=50&offset='+str(page)
+                data = requests.get(url, headers=header)
+                key.requests_count+=1
+                key.save()
+                ndata = data.json()
+
+                for gamedata in ndata:
+                    filtered_data = self.filter_data(gamedata)
+                    self.save_game(filtered_data, key)
+            else:
+                key.available=False
+                key.save()
+                continue
 
         return Response(data=ndata)
 
@@ -122,7 +113,7 @@ class IgDBView(APIView):
 
         return filtered_data
 
-    def save_game(self, filtered_data):
+    def save_game(self, filtered_data, key):
         new_game = IGDBGame(
             id = filtered_data['id'],
             name = filtered_data['name'],
@@ -135,31 +126,57 @@ class IgDBView(APIView):
         )
 
         new_game.save()
-        genres = self.get_genres(filtered_data['genres'])
 
-        for genre in genres:
-            new_game.genres.add(genre)
-            new_game.save()
+        if filtered_data['genres'] is not None:
+            genres = self.get_genres(filtered_data['genres'], key)
 
+            for genre in genres:
+                new_game.genres.add(genre)
+                new_game.save()
 
-    def get_genres(self, genres_id_list):
+        print(new_game.name)
+        for genre in new_game.genres.all():
+            print(genre.name)
+
+    def get_genres(self, genres_id_list, key):
+
         genres = []
 
-        for genre_id in genres_id_list:
-            url = 'https://api-endpoint.igdb.com/genres/{}?fields=name'.format(genre_id)
-            header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
-            'Accept': 'application/json'}
+        if len(genres_id_list)>= 3:
+            url = 'https://api-endpoint.igdb.com/genres/{},{},{}?fields=name'.format(
+                genres_id_list[0], genres_id_list[1],genres_id_list[2]
+                )
+        if len( genres_id_list)==2:
+            url = 'https://api-endpoint.igdb.com/genres/{},{}?fields=name'.format(
+                genres_id_list[0], genres_id_list[1]
+                )
+        else:
+            url = 'https://api-endpoint.igdb.com/genres/{}?fields=name'.format(
+                genres_id_list[0]
+                )
 
-            data = requests.get(url, headers=header)
-            ndata = data.json()
+        header = {'user-key': key.key,
+        'Accept': 'application/json'}
 
+        data = requests.get(url, headers=header)
+        key.requests_count+=1
+        key.save()
+        ndata = data.json()
+
+        for genre in ndata:
 
             genre = Genre(
-                id = ndata[0]['id'],
-                name = ndata[0]['name']
+                id = genre['id'],
+                name = genre['name']
             )
             genre.save()
 
             genres.append(genre)
 
         return genres
+
+    def get_key(self):
+        for key in IGDBKeys.objects.all():
+            if key.available == True:
+                return key
+        return None
