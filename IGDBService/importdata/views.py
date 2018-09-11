@@ -19,10 +19,10 @@ class IgDBView(APIView):
 
     def get(self, request, format=None):
 
-        max_result = 3000 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
+        max_result = 4000 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
         #max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
-        for page in range(1100, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
+        for page in range(2950, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
 
             key = self.get_key()
             if key == None:
@@ -32,12 +32,12 @@ class IgDBView(APIView):
 
                 return Response(data=ndata)
 
-            if((3000-key.requests_count)>=2):
+            if((3000-key.requests_count)>2):
 
                 header = {'user-key': key.key,
                 'Accept': 'application/json'}
 
-                url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset='+str(page)
+                url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=90&order=popularity:desc&limit=50&offset='+str(page)
                 data = requests.get(url, headers=header)
                 key.requests_count+=1
                 key.save()
@@ -50,6 +50,7 @@ class IgDBView(APIView):
                 key.available=False
                 key.save()
                 continue
+
         return Response(data=ndata)
 
     def filter_data(self, gamedata):
