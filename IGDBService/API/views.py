@@ -24,5 +24,5 @@ class GamesNameListView(APIView):
 class GamesSteamListView(APIView):
     serializer_class = GamesSteamSerializer
     def get(self, request, format=None):
-        serializer = self.serializer_class(IGDBGame.objects.all(), many=True)
+        serializer = self.serializer_class(IGDBGame.objects.exclude(steam__isnull=True).exclude(steam=None), many=True)
         return Response(serializer.data)
