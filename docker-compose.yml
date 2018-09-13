@@ -1,11 +1,13 @@
-version: '3'
+version: '3.5'
 
 services:
-  db:
+  igdbdb:
     image: mongo
     ports:
       - "27017:27017"
-  web:
+    networks:
+      - proxynet
+  igdbweb:
     build: .
     command: python3 manage.py runserver 0.0.0.0:8000
     volumes:
@@ -13,4 +15,10 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
+      - igdbdb
+    networks:
+      - proxynet
+
+networks:
+  proxynet:
+    name: GamesBI-network
