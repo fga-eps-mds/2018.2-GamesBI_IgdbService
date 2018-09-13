@@ -33,6 +33,7 @@ class EndpointsTestCase(APITestCase, URLPatternsTestCase):
         )
 
 		self.steam_endpoint = reverse('get_igdb_games_id_steam_list')
+		self.name_endpoint = reverse('get_igdb_games_name_list')
 
 	def tearDown(self):
 		IGDBGame.objects.all().delete()
@@ -55,5 +56,18 @@ class EndpointsTestCase(APITestCase, URLPatternsTestCase):
 
 		response = self.client.get(self.steam_endpoint, format='json')
 
-		self.assertNotEqual(IGDBGame.objects.all().count(), 0)
+		self.assertEqual(IGDBGame.objects.all().count(), 2)
+		#Assert response len 1 because there is just one steam game
 		self.assertEqual(len(response.data),1)
+
+	def test_response_name_endpoint(self):
+
+		'''
+			Test if name endpoint
+			is returning all games
+		'''
+
+		response = self.client.get(self.name_endpoint, format='json')
+
+		self.assertEqual(IGDBGame.objects.all().count(), 2)
+		self.assertEqual(len(response.data),2)
