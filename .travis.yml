@@ -12,6 +12,8 @@ before_install:
 script: 
   - docker-compose up -d
   - sleep 10
+  - docker-compose run igdbweb python manage.py makemigrations importdata
+  - docker-compose run igdbweb python manage.py migrate importdata
   - docker-compose run igdbweb coverage run --source=. manage.py test
 
 after_success:
