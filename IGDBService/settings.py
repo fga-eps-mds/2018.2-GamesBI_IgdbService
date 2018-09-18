@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'mongo1',
-        'HOST': 'db'
+        'HOST': 'igdbdb'
     }   
 }
 
