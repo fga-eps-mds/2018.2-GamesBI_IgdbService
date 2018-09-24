@@ -60,7 +60,8 @@ class EndpointsTestCase(APITestCase, URLPatternsTestCase):
 
 		self.assertEqual(IGDBGame.objects.all().count(), 2)
 		#Assert response len 1 because there is just one steam game
-		self.assertEqual(len(response.data),1)
+		for data in response.data:
+			self.assertNotEqual(data['steam'], None)
 
 	def test_status_name_endpoint(self):
 
