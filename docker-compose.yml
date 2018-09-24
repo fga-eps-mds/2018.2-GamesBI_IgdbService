@@ -20,13 +20,13 @@ services:
       - proxynet
     environment:
       - COVERALLS_REPO_TOKEN
-
-   metabase:
+  metabase:
     image: metabase/metabase
     ports:
       - "3000:3000"
     networks:
       - proxynet
+
 networks:
   proxynet:
     name: GamesBI-network

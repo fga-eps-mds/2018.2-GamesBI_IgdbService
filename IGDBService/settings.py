@@ -67,7 +67,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-    },
+    },27017
 ]
 
 WSGI_APPLICATION = 'IGDBService.wsgi.application'
@@ -76,12 +76,12 @@ WSGI_APPLICATION = 'IGDBService.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = { 
+DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'mongo1',
         'HOST': 'igdbdb'
-    }   
+    }
 }
 
 # Password validation
