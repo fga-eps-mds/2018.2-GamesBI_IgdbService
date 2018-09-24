@@ -67,7 +67,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
             ],
         },
-    },27017
+    },
 ]
 
 WSGI_APPLICATION = 'IGDBService.wsgi.application'
