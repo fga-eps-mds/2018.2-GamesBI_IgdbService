@@ -28,4 +28,14 @@ class GenreSerializer(serializers.ModelSerializer):
 	class Meta:
 
 		model = Genre
+		fields = ['name']
+
+class GameSerializerList(serializers.ModelSerializer):
+	genres = GenreSerializer(
+		many=True
+	)
+
+	class Meta:
+
+		model = IGDBGame
 		fields = '__all__'
