@@ -7,6 +7,10 @@ services:
       - "27017:27017"
     networks:
       - proxynet
+    environment:
+      - MONGODB_USER
+      - MONGODB_DATABASE
+      - MONGODB_PASS
   igdbweb:
     build: .
     command: python3 manage.py runserver 0.0.0.0:8000
