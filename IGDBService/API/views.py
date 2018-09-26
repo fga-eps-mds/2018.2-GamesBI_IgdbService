@@ -9,10 +9,11 @@ from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerialize
 
 class GamesSteamListView(APIView):
     serializer_class = GamesSteamSerializer
+
     def get(self, request, format=None):
         serializer = self.serializer_class(
-        	IGDBGame.objects.exclude(steam=None),
-        	many=True
+            IGDBGame.objects.exclude(steam=None),
+            many=True
         )
 
         return Response(serializer.data)
@@ -20,6 +21,7 @@ class GamesSteamListView(APIView):
 
 class GamesNameListView(APIView):
     serializer_class = GameNameSerializer
+
     def get(self, request, format=None):
         serializer = self.serializer_class(
             IGDBGame.objects.all(),
@@ -31,6 +33,7 @@ class GamesNameListView(APIView):
 
 class GamesAllListView(APIView):
     serializer_class = GameSerializerList
+
     def get(self, request, format=None):
         serializer = self.serializer_class(
             IGDBGame.objects.all(),
@@ -42,6 +45,7 @@ class GamesAllListView(APIView):
 
 class GenreListView(APIView):
     serializer_class = GenreSerializer
+
     def get(self, request, format=None):
         serializer = self.serializer_class(
             Genre.objects.all(),
