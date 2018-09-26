@@ -5,6 +5,8 @@ from rest_framework.test import APITestCase, URLPatternsTestCase
 from model_mommy import mommy
 from IGDBService.importdata.models import IGDBGame
 
+import requests_mock
+
 
 class EndpointsTestCase(APITestCase, URLPatternsTestCase):
 
@@ -83,3 +85,21 @@ class EndpointsTestCase(APITestCase, URLPatternsTestCase):
 
 		self.assertEqual(IGDBGame.objects.all().count(), 2)
 		self.assertEqual(len(response.data),2)
+
+    @requests_mock.Mocker(kw='mock')
+    def test_get(self, **kwargs):
+        header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
+        'Accept': 'application/json'}
+        url = 'https://test.com'
+
+        result = [{"list": {"type": "gama"},
+                   "id": "123456",
+                   "type": {"id": "123456", "name": "CS"}}]
+
+        kwargs['mock'].get(url, text=json.dumps(result))
+
+        current_time = datetime.now().__str__()
+        raw_data = request.get(current_time, url)
+        assert raw_data.response.status_code == 200
+        #assert raw_data.data == result
+        assert raw_data.data_length == 1
