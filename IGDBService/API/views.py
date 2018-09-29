@@ -3,7 +3,7 @@ import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from IGDBService.importdata.models import IGDBGame, Genre
+from IGDBService.importdata.models import IGDBGame, Genre, EmbeddedIGDBGame
 from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer, GenreSerializer, GameSerializerList
 
 
@@ -33,7 +33,7 @@ class GamesAllListView(APIView):
     serializer_class = GameSerializerList
     def get(self, request, format=None):
         serializer = self.serializer_class(
-            IGDBGame.objects.all(),
+            EmbeddedIGDBGame.objects.mongo_find(),
             many=True
         )
 

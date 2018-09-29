@@ -1,4 +1,4 @@
-from IGDBService.importdata.models import IGDBGame, Genre
+from IGDBService.importdata.models import IGDBGame, Genre, EmbeddedIGDBGame
 from rest_framework import serializers
 
 class GameSerializer(serializers.ModelSerializer):
@@ -37,5 +37,5 @@ class GameSerializerList(serializers.ModelSerializer):
 
 	class Meta:
 
-		model = IGDBGame
+		model = EmbeddedIGDBGame
 		fields = '__all__'

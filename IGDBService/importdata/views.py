@@ -3,7 +3,7 @@ import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import IGDBGame, Genre
+from .models import IGDBGame, Genre, EmbeddedGenre, EmbeddedIGDBGame
 from .serializers import GameSerializer, GamesSteamSerializer, GameNameSerializer
 from django.shortcuts import render
 
@@ -17,29 +17,25 @@ class IgDBView(APIView):
     '''
 
     def get(self, request, format=None):
-        IGDBGame.objects.all().delete()
-        header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
-        'Accept': 'application/json'}
-        url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=1&scroll=1'
-        data = requests.get(url, headers=header)
-        max_result = int(data.headers['x-count']) # retorna o a quantidade de itens do endpoint
 
-        max_result = 50 # apenas para fins de teste  , para nao estourar o limite da user_key (retornara apenas 50 games)
+        EmbeddedIGDBGame.objects.all().delete()
 
-        for page in range(0, max_result, 50): #cada solicitaçao retona no maximo 50 valores, assim o for pega todos os itens do endpoint
-            url = 'https://api-endpoint.igdb.com/games/?fields=id,name,hypes,popularity,aggregated_rating,time_to_beat,external,genres&filter[rating][gte]=60&order=popularity:desc&limit=50&offset='+str(page)
-            data = requests.get(url, headers=header)
-            ndata = data.json()
+        for game in IGDBGame.objects.all():
 
-            for gamedata in ndata:
-                filtered_data = self.filter_data(gamedata)
-                self.save_game(filtered_data)
-                self.get_genres(gamedata['genres'])
+            genres = self.get_genres_embedded(game.genres.all())
 
-            games = IGDBGame.objects.all()
+            embedded_game = {
+                'id': game.id,
+                'name': game.name,
+                'hypes': game.hypes,
+                'popularity':game.popularity,
+                'aggregated_rating': game.aggregated_rating,
+                'time_to_beat': game.time_to_beat,
+                'steam': game.steam,
+                'genres':genres
+            }
 
-
-        return Response(data=ndata)
+            EmbeddedIGDBGame.objects.mongo_insert_one(embedded_game)
 
     def filter_data(self, gamedata):
 
@@ -120,6 +116,14 @@ class IgDBView(APIView):
             new_game.genres.add(genre)
             new_game.save()
 
+    def get_genres_embedded(self, genres):
+
+        genres_list = []
+
+        for genre in genres:
+            genres_list.append(genre.name)
+
+        return genres_list
 
     def get_genres(self, genres_id_list):
         genres = []
