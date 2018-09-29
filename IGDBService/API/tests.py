@@ -5,10 +5,14 @@ from rest_framework.test import APITestCase, URLPatternsTestCase
 from model_mommy import mommy
 from IGDBService.importdata.models import IGDBGame
 
+
 import requests_mock
+from  unittest.mock import Mock, patch
+from IGDBService.importdata.views import IgDBView
+#from nose.tools import assert_list_equal, assert_true
 
 
-class EndpointsTestCase(APITestCase, URLPatternsTestCase):
+class EndpointsTestCase(APITestCase, URLPatternsTestCase, object):
 
 	urlpatterns = [
         path('api/', include('IGDBService.API.urls')),
@@ -85,21 +89,43 @@ class EndpointsTestCase(APITestCase, URLPatternsTestCase):
 
 		self.assertEqual(IGDBGame.objects.all().count(), 2)
 		self.assertEqual(len(response.data),2)
+	@classmethod
+	def setup_class(cls):
+		cls.mock_get_patcher = patch('IGDBService.importdata.views.IgDBView')
+		cls.mock_get = cls.mock_get_patcher.start()
 
-    @requests_mock.Mocker(kw='mock')
-    def test_get(self, **kwargs):
-        header = {'user-key': '8ac128e6b3e9709134ad83ac072d0d59',
-        'Accept': 'application/json'}
-        url = 'https://test.com'
+	@classmethod
+	def teardown_class(cls):
+		cls.mock_get_patcher.stop()
 
-        result = [{"list": {"type": "gama"},
-                   "id": "123456",
-                   "type": {"id": "123456", "name": "CS"}}]
+	def test_getting_todos_when_response_is_ok(self):
+		# Configure the mock to return a response with an OK status code.
+		#self.mock_get.return_value.ok = True
 
-        kwargs['mock'].get(url, text=json.dumps(result))
+		todos = [{
+			'id': "id",
+			'name': "name",
+			'hypes': "hypes",
+			'popularity': "popularity",
+			'aggregated_rating': "aggregated_rating",
+			'time_to_beat': "time_to_beat",
+			'steam':"steam",
+			'genres': "genres"
+		}]
+		self.mock_get.return_value = Mock()
+		self.mock_get.return_value.json.return_value = todos
 
-        current_time = datetime.now().__str__()
-        raw_data = request.get(current_time, url)
-        assert raw_data.response.status_code == 200
-        #assert raw_data.data == result
-        assert raw_data.data_length == 1
+        # Call the service, which will send a request to the server.
+		response = self.mock_get.get()
+
+        # If the request is sent successfully, then I expect a response to be returned.
+		self.assert_list_equal(response.json(), todos)
+	def test_getting_todos_when_response_is_not_ok(self):
+		# Configure the mock to not return a response with an OK status code.
+		#self.mock_get.return_value.ok = False
+
+		# Call the service, which will send a request to the server.
+		response = self.mock_get.get()
+
+		# If the response contains an error, I should get no todos.
+		self.assert_is_none(response)
